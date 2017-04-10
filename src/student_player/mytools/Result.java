@@ -1,4 +1,4 @@
-package student_player;
+package student_player.mytools;
 
 import java.util.ArrayList;
 
@@ -7,9 +7,9 @@ import bohnenspiel.BohnenspielMove;
 
 public class Result {
 	int bestScore;
-	BohnenspielMove bestMove;
+	public BohnenspielMove bestMove;
 	BohnenspielBoardState board_state;
-	ArrayList<BohnenspielMove> validMoves;
+	public ArrayList<BohnenspielMove> validMoves;
 	boolean oneSearchFinished;
 	
 	public Result(BohnenspielBoardState board_state){
@@ -20,9 +20,5 @@ public class Result {
 	}
 	public void setBestMove(BohnenspielMove move){
 		bestMove = move;
-//		if (validMoves.contains(move)) bestMove = move;
-//		else{
-//			System.err.println("invalid---");
-//		}
 	}
 }

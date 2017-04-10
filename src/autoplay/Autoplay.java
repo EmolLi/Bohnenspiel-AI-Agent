@@ -55,7 +55,7 @@ public class Autoplay
                 System.out.println("Game "+i);
 
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(700);
                 } catch(InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 }
@@ -63,7 +63,7 @@ public class Autoplay
                 Process client1 = ((i % 2 == 0) ? client1_pb.start() : client2_pb.start());
 
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(700);
                 } catch(InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 }

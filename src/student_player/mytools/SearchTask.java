@@ -1,4 +1,4 @@
-package student_player;
+package student_player.mytools;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,21 +29,11 @@ public class SearchTask implements Runnable {
 
 	@Override
 	public void run() {
-//		try {
-			while (!Thread.currentThread().isInterrupted()){
-	    		alphaBetaSearch(moveState, -1000, 1000, 1);
-	    		searchResult.oneSearchFinished = true;
-    			System.err.println("Done------" +  depthLimit);
-    			depthLimit ++;
-    		}
-//			System.err.println("exiting//------------------------------");
-//		}
-
-//		catch (Exception e) {
-
-//			System.out.println(e);
-
-//		}
+		while (!Thread.currentThread().isInterrupted()){
+	    	alphaBetaSearch(moveState, -1000, 1000, 1);
+	    	searchResult.oneSearchFinished = true;
+    		depthLimit ++;
+    	}
 
 	}
 	
@@ -67,7 +57,6 @@ public class SearchTask implements Runnable {
     	BohnenspielBoardState currentState = moveState.nextState;
     	int turnType = getTurnType(depth);
     	PriorityQueue<MoveState> statesToSearch = moveState.getNextMoveStates(turnType, searchResult);
-//    	ArrayList<BohnenspielMove> moves = currentState.getLegalMoves();
     	
     	// if game over, we dont use eval --> eval only used when the current node is not leaf
     	if (currentState.gameOver()){
@@ -126,10 +115,6 @@ public class SearchTask implements Runnable {
     	}
     	return MIN_TURN;
     }
-
-
-    
-
 }
 
 

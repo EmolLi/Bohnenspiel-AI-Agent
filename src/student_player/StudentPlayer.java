@@ -13,16 +13,17 @@ import bohnenspiel.BohnenspielMove;
 import bohnenspiel.BohnenspielPlayer;
 import bohnenspiel.BohnenspielMove.MoveType;
 //import student_player.mytools.SearchTask;
+import student_player.mytools.MoveState;
+import student_player.mytools.Result;
+import student_player.mytools.SearchTask;
 
-/** A Hus player submitted by a student. */
 public class StudentPlayer extends BohnenspielPlayer {
 	int turn = 1;
-	int turnTime = 700;
-	int firstMoveTime = 700;
+	int turnTime = 900;
+	int firstMoveTime = 29900;
 	int depthLimit = 10;
 	Result searchResult;
 	
-//    private final ExecutorService threadPool = Executors.newSingleThreadExecutor();;
 
     /** You must modify this constructor to return your student number.
      * This is important, because this is what the code that runs the
@@ -56,9 +57,10 @@ bohnenspiel.RandomPlayer
     	}
     	
     	ExecutorService threadPool = Executors.newSingleThreadExecutor();
+    	int timeToSearch = (turn == 1)? firstMoveTime : turnTime;
     	try{
         	Future<?> search = threadPool.submit(new SearchTask(rootState, player_id, opponent_id, searchResult));
-        	search.get(400, TimeUnit.MILLISECONDS);
+        	search.get(turnTime - 100, TimeUnit.MILLISECONDS);
         }
         catch (TimeoutException e){
         	return searchResult.bestMove;
@@ -72,33 +74,6 @@ bohnenspiel.RandomPlayer
         	threadPool.shutdownNow();
         	turn ++;
         }
-    	
-        // Get the contents of the pits so we can use it to make decisions.
-//        int[][] pits = board_state.getPits();
-
-        // Use ``player_id`` and ``opponent_id`` to get my pits and opponent pits.
-//        int[] my_pits = pits[player_id];
-//        int[] op_pits = pits[opponent_id];
-
-        // Use code stored in ``mytools`` package.
-//        MyTools.getSomething();
-
-        // Get the legal moves for the current board state.
-//        ArrayList<BohnenspielMove> moves = board_state.getLegalMoves();
-//        BohnenspielMove move = moves.get(0);
-  
-     
-        // We can see the effects of a move like this...
-//        BohnenspielBoardState cloned_board_state = (BohnenspielBoardState) board_state.clone();
-//        cloned_board_state.move(move);
-
-
-        // But since this is a placeholder algorithm, we won't act on that information.
-//    	setUp(board_state);
-    	// alphaBetaSearch(board_state, -1000, 1000, 1);
-//    	setUpDefaultDecisionBeforeSearch(board_state);
-//    	alphaBetaSearch(board_state, -1000, 1000, 1);
-    	
     	
         return searchResult.bestMove;
     }
