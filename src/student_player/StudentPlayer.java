@@ -41,11 +41,24 @@ bohnenspiel.RandomPlayer
     {
     	// initialize result
     	searchResult = new Result(board_state);
+    	// if only one move, no need to search
+    	if (searchResult.validMoves.size() == 1){
+    		return searchResult.bestMove;
+    	}
+    	
+    	MoveState rootState;
+    	try{
+    		rootState = new MoveState(board_state, player_id, opponent_id);
+    	}
+    	
+    	catch (IllegalArgumentException e){
+    		return searchResult.bestMove;
+    	}
     	
     	ExecutorService threadPool = Executors.newSingleThreadExecutor();
     	try{
-        	Future<?> search = threadPool.submit(new SearchTask(board_state, player_id, opponent_id, searchResult));
-        	search.get(500, TimeUnit.MILLISECONDS);
+        	Future<?> search = threadPool.submit(new SearchTask(rootState, player_id, opponent_id, searchResult));
+        	search.get(400, TimeUnit.MILLISECONDS);
         }
         catch (TimeoutException e){
         	return searchResult.bestMove;
@@ -93,39 +106,6 @@ bohnenspiel.RandomPlayer
 
   
 
-
-
-    // at the begining of the game, we run to set up the thread for search, so the main thread will take care of time
-    // management as we dont want to run out of time
-/**    public void setUp(final BohnenspielBoardState board_state){
-    	
-
-
-//        threadPool = Executors.newSingleThreadExecutor();
-        try{
-        	Future<?> search = threadPool.submit(new SearchTask(board_state, player_id, searchResult));
-        	if (turn != 1){
-        		search.get(turnTime - 200, TimeUnit.MILLISECONDS);
-        	}
-        	else search.get(firstMoveTime - 200, TimeUnit.MILLISECONDS);
-        	search.cancel(true);
-        	
-        }
-        catch (TimeoutException e){
-        	
-        }
-        catch (Exception e){
-//        	e.printStackTrace();
-        }
-        finally{
-        	//shut down the executor service now
-//        	threadPool.shutdown();
-        	turn ++;
-        }
-      
-    }
-    
-**/
 
 
 }

@@ -1,19 +1,27 @@
 package student_player;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 import bohnenspiel.BohnenspielBoardState;
 import bohnenspiel.BohnenspielMove;
 
 public class SearchTask implements Runnable {
+	// =============comparators for queue info =============
+	public static final int MIN_TURN = 1;
+	public static final int MAX_TURN = 2;
+	public static final int ROOT_AGAIN = 3;
+	
+	
 	int depthLimit = 8;
 	Result searchResult;
-	BohnenspielBoardState board_state;
+	MoveState moveState;
 	int player_id;
 	int opponent_id;
 
-	public SearchTask(BohnenspielBoardState board_state, int player_id, int opponent_id, Result r) {
-		this.board_state = board_state;
+	public SearchTask(MoveState moveState, int player_id, int opponent_id, Result r) {
+		this.moveState = moveState;
 		this.player_id = player_id;
 		this.opponent_id = opponent_id;
 		this.searchResult = r;
@@ -23,8 +31,9 @@ public class SearchTask implements Runnable {
 	public void run() {
 //		try {
 			while (!Thread.currentThread().isInterrupted()){
-	    		alphaBetaSearch(board_state, -1000, 1000, 1);
-    			System.err.println("Done");
+	    		alphaBetaSearch(moveState, -1000, 1000, 1);
+	    		searchResult.oneSearchFinished = true;
+    			System.err.println("Done------" +  depthLimit);
     			depthLimit ++;
     		}
 //			System.err.println("exiting//------------------------------");
@@ -38,17 +47,7 @@ public class SearchTask implements Runnable {
 
 	}
 	
-    
-    // TODO: eval function evaluation function, use score
-    private int eval(BohnenspielBoardState board_state) {
-    	if (board_state.gameOver()){
-    		// if game over, we dont use heuristic
-    		// if we win, the score is 1000, else -1000
-    		return (board_state.getWinner() == player_id) ? 1000 : -1000;
-    	}
-    	return board_state.getScore(player_id) - board_state.getScore(opponent_id);
-    }
-    
+
 
     
 //    """ 
@@ -57,30 +56,38 @@ public class SearchTask implements Runnable {
 //    best score at the root node.  
 //    """
 //    ref: https://www.cs.swarthmore.edu/~meeden/cs63/f05/minimax.html
-    private int alphaBetaSearch(BohnenspielBoardState currentState, int alpha, int beta, int depth){
-    	// TODO:
+    private int alphaBetaSearch(MoveState moveState, int alpha, int beta, int depth){
 
-//         check if at search bound or game over
-    	if ((depth == depthLimit) || currentState.gameOver()){
-    		return eval(currentState);
+    	// check if at search bound
+    	if (depth == depthLimit){
+    		return moveState.eval;
     	}
     	
-    	ArrayList<BohnenspielMove> moves = currentState.getLegalMoves();
-    	// we dont really need this, but just in case
-    	if (moves.size() == 0){
-    		return eval(currentState);
+    	
+    	BohnenspielBoardState currentState = moveState.nextState;
+    	int turnType = getTurnType(depth);
+    	PriorityQueue<MoveState> statesToSearch = moveState.getNextMoveStates(turnType, searchResult);
+//    	ArrayList<BohnenspielMove> moves = currentState.getLegalMoves();
+    	
+    	// if game over, we dont use eval --> eval only used when the current node is not leaf
+    	if (currentState.gameOver()){
+    		return (currentState.getWinner() == player_id) ? 1000 : -1000;
     	}
+    	
+    	// no state to search
+    	if (statesToSearch == null) return moveState.eval;
+
     	
     	// max turn -> odd depth
-    	if (depth % 2 == 1){
-    		for (BohnenspielMove move : moves){
-    			int resultScore = this.alphaBetaSearch(getNextState(move, currentState), alpha, beta, depth + 1);
-    			
+    	if (turnType == MAX_TURN || turnType == ROOT_AGAIN){
+    		while (!statesToSearch.isEmpty()){
+    			MoveState move = statesToSearch.remove();
+    			int resultScore = this.alphaBetaSearch(move, alpha, beta, depth + 1);
     			// interpret result for max
     			if (resultScore > alpha){
     				alpha = resultScore;
     				
-    				if (depth == 1) searchResult.bestMove = move;	// root
+    				if (depth == 1) searchResult.bestMove = move.move;	// root
     				
     				if (alpha >= beta) return alpha;	// prune
     			}
@@ -90,14 +97,15 @@ public class SearchTask implements Runnable {
     	
     	// min turn -> even depth
     	else{
-    		for (BohnenspielMove move : moves){
-    			int resultScore = this.alphaBetaSearch(getNextState(move, currentState), alpha, beta, depth + 1);
+    		while (!statesToSearch.isEmpty()){
+    			MoveState move = statesToSearch.remove();
+    			int resultScore = this.alphaBetaSearch(move, alpha, beta, depth + 1);
     			
     			// interpret result for max
     			if (resultScore < beta){
     				beta = resultScore;
     				
-    				if (depth == 1) searchResult.bestMove = move;	// root
+    				if (depth == 1) searchResult.bestMove = move.move;	// root
     				
     				if (beta <= alpha) return beta;	// prune
     			}
@@ -105,15 +113,24 @@ public class SearchTask implements Runnable {
     		return beta;
     	}
 
-}
-
-    private BohnenspielBoardState getNextState(BohnenspielMove move, BohnenspielBoardState currentState){
-    	BohnenspielBoardState cloned_board_state = (BohnenspielBoardState) currentState.clone();
-        cloned_board_state.move(move);
-        return cloned_board_state;
+    }
+    
+    
+    private int getTurnType(int depth){
+    	if (depth == 1 && searchResult.oneSearchFinished){
+    		return ROOT_AGAIN;
+    	}
+    	// max turn -> odd depth
+    	if (depth % 2 == 1){
+    		return MAX_TURN;
+    	}
+    	return MIN_TURN;
     }
 
 
     
 
 }
+
+
+
