@@ -38,7 +38,7 @@ implements BoardPanel.BoardPanelListener  {
     /** The list of games for which servers can be launched */
     protected static final String[] BOARD_CLASSES = {"bohnenspiel.BohnenspielBoard"};
     /** The list of players that can be launched */
-    protected static final String[] PLAYER_CLASSES = {"bohnenspiel.RandomBohnenspielPlayer", "bohnenspiel.GreedyBohnenspielPlayer","student_player.StudentPlayer"};
+    protected static final String[] PLAYER_CLASSES = {"bohnenspiel.RandomBohnenspielPlayer", "bohnenspiel.GreedyBohnenspielPlayer","student_player.StudentPlayer", "student_player.Player2"};
     private static final int BOARD_SIZE = 800;
     private static final int LIST_WIDTH = 280;
 

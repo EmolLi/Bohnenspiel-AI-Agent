@@ -17,26 +17,24 @@ public class SearchTask implements Runnable {
 		this.player_id = player_id;
 		this.opponent_id = opponent_id;
 		this.searchResult = r;
-		setUpDefaultDecisionBeforeSearch(board_state);
 	}
 
 	@Override
 	public void run() {
-		try {
-//			while (!Thread.currentThread().isInterrupted()){
+//		try {
+			while (!Thread.currentThread().isInterrupted()){
 	    		alphaBetaSearch(board_state, -1000, 1000, 1);
-//    			alphaBetaSearch(board_state, -1000, 1000, 1);
     			System.err.println("Done");
-//    			depthLimit ++;
-//    		}
-			System.err.println("exiting//------------------------------");
-		}
+    			depthLimit ++;
+    		}
+//			System.err.println("exiting//------------------------------");
+//		}
 
-		catch (Exception e) {
+//		catch (Exception e) {
 
-			System.out.println(e);
+//			System.out.println(e);
 
-		}
+//		}
 
 	}
 	
@@ -51,18 +49,7 @@ public class SearchTask implements Runnable {
     	return board_state.getScore(player_id) - board_state.getScore(opponent_id);
     }
     
-    /**
-     * we run this at the very beginning, so at least we have a decision
-     * we then do search to find better decision
-     * TODO: use open book to optimize the first decision
-     * @param currentState
-     */
-    private void setUpDefaultDecisionBeforeSearch(BohnenspielBoardState currentState){
-    	ArrayList<BohnenspielMove> moves = currentState.getLegalMoves();
-    	searchResult.bestMove = moves.get(0);
-    	BohnenspielBoardState cloned_board_state = getNextState(searchResult.bestMove, currentState);
-    	searchResult.bestScore = eval(cloned_board_state);
-    }
+
     
 //    """ 
 //    Returns best score for the player associated with the given node.

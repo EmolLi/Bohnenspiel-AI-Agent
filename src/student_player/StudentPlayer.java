@@ -19,7 +19,7 @@ public class StudentPlayer extends BohnenspielPlayer {
 	int turn = 1;
 	int turnTime = 700;
 	int firstMoveTime = 700;
-	int depthLimit = 8;
+	int depthLimit = 10;
 	Result searchResult;
 	
 //    private final ExecutorService threadPool = Executors.newSingleThreadExecutor();;
@@ -30,7 +30,6 @@ public class StudentPlayer extends BohnenspielPlayer {
      * The constructor should do nothing else. */
     public StudentPlayer() { 
     	super("260683698");
-    	searchResult = new Result();
     }
 
     /** This is the primary method that you need to implement.
@@ -40,15 +39,19 @@ bohnenspiel.RandomPlayer
      * for another example agent. */
     public BohnenspielMove chooseMove(BohnenspielBoardState board_state)
     {
+    	// initialize result
+    	searchResult = new Result(board_state);
+    	
     	ExecutorService threadPool = Executors.newSingleThreadExecutor();
     	try{
         	Future<?> search = threadPool.submit(new SearchTask(board_state, player_id, opponent_id, searchResult));
-        	search.get(turnTime - 50, TimeUnit.MILLISECONDS);
+        	search.get(500, TimeUnit.MILLISECONDS);
         }
         catch (TimeoutException e){
-        	
+        	return searchResult.bestMove;
         }
         catch (Exception e){
+        	return searchResult.bestMove;
 //        	e.printStackTrace();
         }
         finally{
@@ -56,6 +59,7 @@ bohnenspiel.RandomPlayer
         	threadPool.shutdownNow();
         	turn ++;
         }
+    	
         // Get the contents of the pits so we can use it to make decisions.
 //        int[][] pits = board_state.getPits();
 
@@ -125,4 +129,3 @@ bohnenspiel.RandomPlayer
 
 
 }
-
