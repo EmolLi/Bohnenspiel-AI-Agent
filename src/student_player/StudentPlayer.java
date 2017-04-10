@@ -19,7 +19,7 @@ import student_player.mytools.SearchTask;
 
 public class StudentPlayer extends BohnenspielPlayer {
 	int turn = 1;
-	int turnTime = 900;
+	int turnTime = 600;
 	int firstMoveTime = 29900;
 	int depthLimit = 10;
 	Result searchResult;
