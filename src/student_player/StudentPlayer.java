@@ -60,7 +60,7 @@ bohnenspiel.RandomPlayer
     	int timeToSearch = (turn == 1)? firstMoveTime : turnTime;
     	try{
         	Future<?> search = threadPool.submit(new SearchTask(rootState, player_id, opponent_id, searchResult));
-        	search.get(turnTime - 100, TimeUnit.MILLISECONDS);
+        	search.get(turnTime, TimeUnit.MILLISECONDS);
         }
         catch (TimeoutException e){
         	return searchResult.bestMove;
